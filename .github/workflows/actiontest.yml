@@ -30,7 +30,7 @@ jobs:
       - name: set error if tests fail
         id: update-output
         if: ${{ failure() }}
-        run: echo "::set-output name=${{ matrix.config.pkg }}::error"
+        run: echo "::set-output name=${{ matrix.config.pkg }}::{error}"
         shell: bash
 
   aggregate-results:
@@ -39,8 +39,8 @@ jobs:
     steps:
       - name: Aggregate results
         run: |
+          # how do I loop over all outputs, instead of hardcoding these?
           echo "pkgA: ${{ needs.unit-tests.outputs.pkgA }}"
           echo "pkgB: ${{ needs.unit-tests.outputs.pkgB }}"
-          # how do I loop over all outputs, instead of hardcoding these?
         shell: bash
 
