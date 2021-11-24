@@ -39,8 +39,8 @@ jobs:
     steps:
       - name: Aggregate results
         run: |
-          echo "result: jaspDescriptives: ${{ needs.unit-tests.outputs.jaspDescriptives }}"
-          echo "result: jaspTTests:       ${{ needs.unit-tests.outputs.jaspTTests }}"
+          echo "pkgA: ${{ needs.unit-tests.outputs.pkgA }}"
+          echo "pkgB: ${{ needs.unit-tests.outputs.pkgB }}"
           # how do I loop over all outputs, instead of hardcoding these?
         shell: bash
 
