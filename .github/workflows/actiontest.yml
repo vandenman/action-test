@@ -1,0 +1,46 @@
+name: Test
+
+on: push
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    
+    name: (${{ matrix.config.pkg }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {pkg: "pkgA"}
+          - {pkg: "pkgB"}
+          
+    steps:
+      - uses: actions/checkout@v2
+      
+      # more stuff that actually runs unit tests
+      - name: fake unit tests
+        run: |
+          if [ ${{ matrix.config.pkg }} = 'pkgA' ]; then
+            exit 1
+          fi
+        shell: bash
+
+      - name: set error if tests fail
+        id: update-output
+        if: ${{ failure() }}
+        run: echo "::set-output name=${{ matrix.config.pkg }}::error"
+        shell: bash
+
+  aggregate-results:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - name: Aggregate results
+        run: |
+          echo "result: jaspDescriptives: ${{ needs.unit-tests.outputs.jaspDescriptives }}"
+          echo "result: jaspTTests:       ${{ needs.unit-tests.outputs.jaspTTests }}"
+          # how do I loop over all outputs, instead of hardcoding these?
+        shell: bash
+
