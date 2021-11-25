@@ -18,9 +18,7 @@ jobs:
     # how to avoid hardcoding these?
     outputs:
       ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
-      ${{ matrix.os }}-${{ matrix.pkg }}: ${{ steps.update-output.outputs.${{ matrix.os }}-${{ matrix.pkg }} }}
-      #ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
-      
+      ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}     
   
     steps:
       - uses: actions/checkout@v2
