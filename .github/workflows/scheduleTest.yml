@@ -1,0 +1,25 @@
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '12,31,47 9-21 * * 1-5'
+
+name: unit-tests
+
+jobs:
+  unit-tests:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: "4.1.0"}
+          - {os: macOS-latest,   r: "4.1.0"}
+          - {os: ubuntu-20.04,   r: "4.1.0"}
+
+    steps:
+      name: print things
+      run: echo "Hello world from: ${{ matrix.config.os }} - ${{ matrix.config.r }}"
