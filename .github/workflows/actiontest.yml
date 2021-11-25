@@ -17,7 +17,8 @@ jobs:
           - {pkg: "pkgB"}
 
     outputs:
-      results: ${{ steps.update-output.outputs }}
+      pkgA: ${{ steps.update-output.outputs.pkgA }}
+      pkgB: ${{ steps.update-output.outputs.pkgB }}
   
     steps:
       - uses: actions/checkout@v2
