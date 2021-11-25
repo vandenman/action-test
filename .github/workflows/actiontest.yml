@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
 
-    name: (${{ matrix.os }}) (${{ matrix.pkg }})
+    name: ${{ matrix.os }} (${{ matrix.pkg }})
 
     strategy:
       fail-fast: false
@@ -15,20 +15,21 @@ jobs:
         os: [ubuntu-latest]
         pkg: [pkgA, pkgB]
 
-    # how do avoid hardcoding these?
+    # how to avoid hardcoding these?
     outputs:
-      pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
-      pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
+      ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
+      ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
   
     steps:
       - uses: actions/checkout@v2
       
-      # more stuff that actually runs unit tests
       - name: fake unit tests
         run: |
-          if [ ${{ matrix.pkg }} = 'pkgA' ]; then
-            exit 1
-          fi
+          exit 1 # fail all tests for now
+          # fail only pkgA
+          #if [ ${{ matrix.pkg }} = 'pkgA' ]; then
+          #  exit 1
+          #fi
         shell: bash
 
       - name: set error if tests fail
