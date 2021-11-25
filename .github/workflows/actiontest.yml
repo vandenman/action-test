@@ -40,6 +40,7 @@ jobs:
       - name: Aggregate results
         run: |
           # how do I loop over all outputs, instead of hardcoding these?
+          echo "outputs: ${{ fromJSON(needs.unit-tests) }}"
           echo "pkgA: ${{ needs.unit-tests.outputs.pkgA }}"
           echo "pkgB: ${{ needs.unit-tests.outputs.pkgB }}"
         shell: bash
