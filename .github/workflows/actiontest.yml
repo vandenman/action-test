@@ -15,7 +15,10 @@ jobs:
         config:
           - {pkg: "pkgA"}
           - {pkg: "pkgB"}
-          
+
+    outputs:
+      results: ${{ steps.update-output.outputs }}
+  
     steps:
       - uses: actions/checkout@v2
       
