@@ -45,3 +45,8 @@ jobs:
           echo "pkgB: ${{ needs.unit-tests.outputs.pkgB }}"
         shell: bash
 
+      - name: Message success
+        uses: actions/github-script@v4
+        with:
+          script: |
+            console.log(${{ needs.unit-tests }})
