@@ -6,19 +6,19 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     continue-on-error: true
-    
-    name: (${{ matrix.config.pkg }})
+
+    name: (${{ matrix.os }}) (${{ matrix.pkg }})
 
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - {pkg: "pkgA"}
-          - {pkg: "pkgB"}
+        os: [ubuntu-latest]
+        pkg: [pkgA, pkgB]
 
+    # how do avoid hardcoding these?
     outputs:
-      pkgA: ${{ steps.update-output.outputs.pkgA }}
-      pkgB: ${{ steps.update-output.outputs.pkgB }}
+      pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
+      pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
   
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
       # more stuff that actually runs unit tests
       - name: fake unit tests
         run: |
-          if [ ${{ matrix.config.pkg }} = 'pkgA' ]; then
+          if [ ${{ matrix.pkg }} = 'pkgA' ]; then
             exit 1
           fi
         shell: bash
@@ -34,7 +34,7 @@ jobs:
       - name: set error if tests fail
         id: update-output
         if: ${{ failure() }}
-        run: echo "::set-output name=${{ matrix.config.pkg }}::{error}"
+        run: echo "::set-output name=${{ matrix.os }}-${{ matrix.pkg }}::error"
         shell: bash
 
   aggregate-results:
@@ -42,14 +42,6 @@ jobs:
     needs: unit-tests
     steps:
       - name: Aggregate results
-        run: |
-          # how do I loop over all outputs, instead of hardcoding these?
-          echo "outputs: ${{ needs.unit-tests }}"
-          echo "pkgA: ${{ needs.unit-tests.outputs.pkgA }}"
-          echo "pkgB: ${{ needs.unit-tests.outputs.pkgB }}"
-        shell: bash
-
-      - name: test print
         env:
           NEEDS: ${{ toJSON(needs) }}
         run: echo "$NEEDS"
