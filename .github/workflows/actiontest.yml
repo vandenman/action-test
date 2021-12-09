@@ -3,17 +3,31 @@ name: Test
 on: push
 
 jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: create modules
+        id: set-modules
+        run: echo "::set-output name=modules::['pkgA','pkgA']"
+
+    outputs:
+      modules: ${{ steps.set-modules.outputs.modules }}
+
   unit-tests:
+    needs: create-matrix
     runs-on: ${{ matrix.os }}
     continue-on-error: true
 
-    name: ${{ matrix.os }} (${{ matrix.pkg }})
+    name: ${{ matrix.os }} (${{ matrix.module }})
 
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        pkg: [pkgA, pkgB]
+        module: ${{ fromJson(needs.create-matrix.outputs.modules) }}
 
     # how to avoid hardcoding these?
     outputs:
@@ -27,7 +41,7 @@ jobs:
         run: |
           exit 1 # fail all tests for now
           # fail only pkgA
-          #if [ ${{ matrix.pkg }} = 'pkgA' ]; then
+          #if [ ${{ matrix.module }} = 'pkgA' ]; then
           #  exit 1
           #fi
         shell: bash
@@ -35,7 +49,7 @@ jobs:
       - name: set error if tests fail
         id: update-output
         if: ${{ failure() }}
-        run: echo "::set-output name=${{ matrix.os }}-${{ matrix.pkg }}::error"
+        run: echo "::set-output name=${{ matrix.os }}-${{ matrix.module }}::error"
         shell: bash
 
   aggregate-results:
