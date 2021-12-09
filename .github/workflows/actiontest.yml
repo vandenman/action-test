@@ -11,10 +11,19 @@ jobs:
       
       - name: create modules
         id: set-modules
-        run: echo "::set-output name=modules::['pkgA','pkgA']"
+        run: echo "::set-output name=modules::['pkgA','pkgB']"
+        
+      - name: create outputs
+        id: set-outputs
+        run: |
+          echo '::set-output name=outputs::{
+             ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
+             ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
+           }'
 
     outputs:
       modules: ${{ steps.set-modules.outputs.modules }}
+      outputs: ${{ steps.set-outputs.outputs.outputs }}
 
   unit-tests:
     needs: create-matrix
@@ -30,9 +39,9 @@ jobs:
         module: ${{ fromJson(needs.create-matrix.outputs.modules) }}
 
     # how to avoid hardcoding these?
-    outputs:
-      ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
-      ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}     
+    outputs: ${{ fromJson(needs.create-matrix.outputs.outputs) }}
+#       ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
+#       ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}     
   
     steps:
       - uses: actions/checkout@v2
