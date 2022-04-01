@@ -3,69 +3,25 @@ name: Test
 on: push
 
 jobs:
-  create-matrix:
+  test:
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: create modules
-        id: set-modules
-        run: echo "::set-output name=modules::['pkgA','pkgB']"
-        
-      - name: create outputs
-        id: set-outputs
-        run: |
-          echo '::set-output name=outputs::{
-             ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
-             ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}
-           }'
-
-    outputs:
-      modules: ${{ steps.set-modules.outputs.modules }}
-      outputs: ${{ steps.set-outputs.outputs.outputs }}
-
-  unit-tests:
-    needs: create-matrix
-    runs-on: ${{ matrix.os }}
-    continue-on-error: true
-
-    name: ${{ matrix.os }} (${{ matrix.module }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        module: ${{ fromJson(needs.create-matrix.outputs.modules) }}
-
-    # how to avoid hardcoding these?
-    outputs: ${{ fromJson(needs.create-matrix.outputs.outputs) }}
-#       ubuntu-latest-pkgA: ${{ steps.update-output.outputs.ubuntu-latest-pkgA }}
-#       ubuntu-latest-pkgB: ${{ steps.update-output.outputs.ubuntu-latest-pkgB }}     
   
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: fake unit tests
+
+      - name: create string
         run: |
-          exit 1 # fail all tests for now
-          # fail only pkgA
-          #if [ ${{ matrix.module }} = 'pkgA' ]; then
-          #  exit 1
-          #fi
+          MY_STRING=$(cat << EOF
+          first line
+          second line
+          third line
+          EOF
+          )
+          echo "MY_STRING<<EOF" >> $GITHUB_ENV
+          echo "$MY_STRING" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
         shell: bash
+        id: my_string
 
-      - name: set error if tests fail
-        id: update-output
-        if: ${{ failure() }}
-        run: echo "::set-output name=${{ matrix.os }}-${{ matrix.module }}::error"
-        shell: bash
-
-  aggregate-results:
-    runs-on: ubuntu-latest
-    needs: unit-tests
-    steps:
-      - name: Aggregate results
-        env:
-          NEEDS: ${{ toJSON(needs) }}
-        run: echo "$NEEDS"
+      - name: display string
+        run: |
+          echo "The string is: ${{ env.MY_STRING }}"
