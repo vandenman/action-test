@@ -11,9 +11,26 @@ jobs:
       - name: create string
         run: |
           MY_STRING=$(cat << EOF
-          first line
-          second line
-          third line
+          The linter found the following issues:
+          
+          <details>
+          <summary>List of issues</summary>
+          <details>
+          <summary>style: Variable and function name style should be camelCase.</summary>
+          
+          [R/descriptives.R:24:1: ](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/R/descriptives.R#L24)
+          ```r
+          Descriptives <- function(jaspResults, dataset, options) {
+          ^~~~~~~~~~~~
+          ```
+          [R/descriptives.R:33:7: ](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/R/descriptives.R#L33)
+          ```r
+                dataset.factors <- .readDataSetToEnd(columns=variables, columns.as.factor=splitName)
+                ^~~~~~~~~~~~~~~
+          ```
+          </details>
+          
+          </details>
           EOF
           )
           echo "MY_STRING<<EOF" >> $GITHUB_ENV
